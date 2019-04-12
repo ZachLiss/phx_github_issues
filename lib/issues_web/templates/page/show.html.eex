@@ -1,3 +1,24 @@
-<h1> show page!</h1>
-<%= @user %>
-<%= @project %>
+<h2><%= @user %> / <%= @project %></h2>
+
+<table>
+	<tr>
+		<th>Number</th>
+		<th>Created At</th>
+		<th>Title</th>
+	</tr>
+<%= for issue <- @issues do %>
+	<tr>
+		<td>
+			<%= issue.number %>
+		</td>
+		<td>
+			<%= issue.created_at %>
+		</td>
+		<td>
+			<%= issue.title %>
+		</td>
+	</tr>
+<% end %>
+</table>
+
+<span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>
