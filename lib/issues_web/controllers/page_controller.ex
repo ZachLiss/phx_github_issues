@@ -14,7 +14,10 @@ defmodule IssuesWeb.PageController do
 				IO.inspect issues
 				render(conn, "show.html", %{user: user, project: project, issues: issues})
 
-			_ -> render(conn, "index.html")
+			_ ->
+				conn
+				|> put_flash(:error, "Error grabbing github issues")
+				|>render("index.html")
 		end
 		# conn
 		# |> render(conn, "show.html", %{user: user, project: project})

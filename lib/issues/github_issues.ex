@@ -9,17 +9,18 @@ defmodule Issues.GithubIssues do
 
 	def get_issues_for_user_and_project(user, project) do
 		count = 5
-		result = fetch(user, project)
-		|> decode_response
-		|> convert_to_list_of_hashdicts
-		|> sort_into_ascending_order
-		|> Enum.take(count)
-		|> prepare_data_for_page
-		# |> Issues.TableFormatter.print_table_for_columns(["number", "created_at", "title"])
+		case fetch(user, project) do
+			{:ok, _body} = response ->
+				result = response
+				|> decode_response
+				|> convert_to_list_of_hashdicts
+				|> sort_into_ascending_order
+				|> Enum.take(count)
+				|> prepare_data_for_page
+				{:ok, result}
+			{:error, msg} -> {:error, msg}
+		end
 
-		# is this a reasonable way to return some results from a pipeline?
-		# could we also do something with an anonyomous function above?
-		{:ok, result}
 	end
 
 	def prepare_data_for_page(issues) do
@@ -43,9 +44,14 @@ defmodule Issues.GithubIssues do
 		{:ok, :jsx.decode body}
 	end
 	defp handle_response({:error, %{status_code: status, body: body}}) do
-		Logger.info "Error #{status} returned"
+		# Logger.info "Error #{status} returned"
 		{:error, :jsx.decode body}
 	end
+	defp handle_response(error) do
+		# Logger.info "Error #{status} returned"
+		{:error, "idk something bad happened"}
+	end
+
 
 	# cli.ex
 	def decode_response({:ok, body}), do: body
